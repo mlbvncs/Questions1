@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>three.ai</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="static/styles/navbar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  </head>
+  <body class="body">
+    <header>
+      <div class="container-fluid div1 font1">
+        <nav class="navbar navbar-expand-sm navbar-dark px-5">
+          <a class="navbar-brand" href="/">three.ai</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbar">
+            <div class="navbar-nav">
+                <a class="nav-link" href="/">01: Principal</a>
+              {% if current_user.is_authenticated %}
+                <a class="nav-link" href="/usuário">02: Usuário</a>
+                <a class="nav-link" href="/questões">03: Questões</a>
+              {% else %}
+                <a class="nav-link active" href="/entrarnaconta">02: Entrar | Criar conta</a>
+              {% endif %}
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+    {% block content %}
+      <div class="container-fluid px-5 div2">
+        <div class="py-5 px-5 div3">
+          {% if current_user.is_authenticated %}
+            <h3 class="text-center">Usuário já está logado</h3>
+          {% else %}
+            <h3 class="text-center">Entre na sua conta</h3>
+            <div class="container-fluid border mt-4 div4">
+              <div class="row text-center py-2 font2">
+                <div class="col-sm-6">
+                  <a class="nav-link" href="/entrarnaconta">Entrar na conta</a>
+                </div>
+                <div class="col-sm-6">
+                  <a class="nav-link color" href="/criarconta">Criar conta</a>
+                </div>
+              </div>
+            </div>
+            <form action="/usuário" method="POST" id="form">
+              <div class="mt-4">
+                <label for="email" id="label-email"><small>Email</small></label>
+                <input class="form-control font3" type="text" id="email" name="email" placeholder="Digite seu email" autocomplete="off">
+                <div class="text-danger form-text" id="email1"></div>
+              </div>
+              <div class="mt-1">
+                <label for="senha" id="label-senha"><small>Senha</small></label><br>
+                <div class="input-group">
+                  <input class="form-control border-end-0 font3" type="password" id="senha" name="senha" placeholder="Digite sua senha" aria-describedby="icon">
+                  <span class="input-group-text bg-white font3" id="icon"><i class="bi bi-eye-slash-fill icon" id="bto-senha" onclick="mostrarSenha()"></i></span>
+                </div>
+                <div class="text-danger form-text" id="senha1"></div>
+              </div>
+              <div class="mt-1"><a class="link-dark font3" href="/redefinirsenha">Esqueceu sua senha?</a></div>
+              <button  class="form-control bg-light mt-3 font3 border">Entrar</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+      <style>
+        .div2 {
+          height: 691px;
+          /*alinhando a div de dentro verticalmente e horizontalmente no centro*/
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .div3 {
+          width: 500px;
+        }
+        .div4 {
+          border-radius: 16px;
+        }
+        .font2 {
+          font-size: 20px;
+        }
+        .font3 {
+          font-size: 17px;
+        }
+        .border {
+          border-radius: 16px;
+        }
+        .icon {
+          cursor: pointer;
+          color: grey;
+        }
+        .color {
+          color: gainsboro;
+        }
+        .form-control:focus{
+          /*tirando box-shadow (luz azul) dos inputs*/
+          border-color: gainsboro;
+          -webkit-box-shadow: none;
+          box-shadow: none;
+        }
+      </style>
+      <script>
+          function mostrarSenha(){
+            var inputPass = document.getElementById('senha')
+            var btoShowPass = document.getElementById('bto-senha')
+
+            if(inputPass.type === 'password'){
+                inputPass.setAttribute('type', 'text')
+                btoShowPass.classList.replace('bi-eye-slash-fill', 'bi-eye-fill')
+            }else{
+                inputPass.setAttribute('type', 'password')
+                btoShowPass.classList.replace('bi-eye-fill', 'bi-eye-slash-fill')
+            }
+          }
+          function validateEmail(email){
+              var re = /\S+@\S+\.\S+/;
+              return re.test(email);
+          }
+          form.addEventListener('submit', (event) => {
+              var form = document.querySelector('#form')
+              event.preventDefault();
+
+              var labelemail = document.querySelector('#label-email')
+              var email = document.querySelector('#email')
+              var email1 = document.querySelector('#email1')
+
+              var labelsenha = document.querySelector('#label-senha')
+              var senha = document.querySelector('#senha')
+              var span = document.querySelector('#icon')
+              var senha1 = document.querySelector('#senha1')
+
+              //pegando os dados do banco de dados
+              var emails = {{ email | tojson }}
+              var senhas = {{ senha | tojson }}
+
+              if(validateEmail(email.value) === true){
+                  //se o user já existir no banco de dados, entra no if
+                  if(emails.indexOf(email.value) > -1){
+                      email.setAttribute('style', 'border-color: gainsboro;')
+                      labelemail.setAttribute('style', 'color: dark;')
+                      email1.innerHTML = ""
+
+                      var índiceemails = emails.indexOf(email.value)
+                      var contemail = true
+                  }else{
+                      email.setAttribute('style', 'border-color: red;')
+                      labelemail.setAttribute('style', 'color: red;')
+                      email1.innerHTML = "Email inexistente"
+
+                      var contemail = false
+                  }
+              }else{
+                  email.setAttribute('style', 'border-color: red;')
+                  labelemail.setAttribute('style', 'color: red;')
+                  email1.innerHTML = "Email inválido"
+
+                  var contemail = false
+              }
+              //
+              if(senha.value !== '' && contemail === true){
+                  //se a senha digitada for igual a senha com o mesmo índice do email e contemail for true, entra no if
+                  if(senha.value === senhas[índiceemails]){
+                      senha.setAttribute('style', 'border-color: gainsboro;')
+                      span.setAttribute('style', 'border-color: gainsboro;')
+                      labelsenha.setAttribute('style', 'color: dark;')
+                      senha1.innerHTML = ""
+
+                      var contsenha = true
+                  }else{
+                      senha.setAttribute('style', 'border-color: red;')
+                      labelsenha.setAttribute('style', 'color: red;')
+                      span.setAttribute('style', 'border-color: red;')
+                      senha1.innerHTML = "Senha incorreta"
+
+                      var contsenha = false
+                  }
+              }else if(senha.value === '' && contemail === true){
+                  senha.setAttribute('style', 'border-color: red;')
+                  labelsenha.setAttribute('style', 'color: red;')
+                  span.setAttribute('style', 'border-color: red;')
+                  senha1.innerHTML = "Senha inválida"
+
+                  var contsenha = false
+              }else{
+                  senha.setAttribute('style', 'border-color: red;')
+                  labelsenha.setAttribute('style', 'color: red;')
+                  span.setAttribute('style', 'border-color: red;')
+                  senha1.innerHTML = "Senha inválida (email inválido ou inexistente)"
+
+                  var contsenha = false
+              }
+              //se nada estiver vazio, redireciona para a rota "/usuário"
+              if(contemail === true && contsenha === true){
+                  form.submit()
+              }else if(contemail !== true){
+                  email.focus()
+              }else if(contemail === true && contsenha !== true){
+                  senha.focus()
+              }
+          })
+      </script>
+    {% endblock %}
+  </body>
+</html>

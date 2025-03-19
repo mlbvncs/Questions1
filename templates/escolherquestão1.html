@@ -1,0 +1,167 @@
+{% extends "questões.html" %}
+{% block content %}
+  {% if current_user.is_authenticated %}
+    <div class="container-fluid px-5 div2">
+      <div class="mt-4 div3">
+        <form id="form">
+          <div class="row">
+            <div class="col-sm-6 div4">
+               <label class="font2" for="select1">Selecione uma matéria:</label>
+            </div>
+            <div class="col-sm-6">
+               <select class="form-control border-dark select1 font2" id="select1" onChange="liberaAssunto()">
+                 <option selected data-default>Selecione</option>
+                 <option value="Matemática">Matemática</option>
+                 <option value="Física">Física</option>
+               </select>
+            </div>
+          </div>
+          <div class="mt-2">
+            <div class="row mt-2" id="selectoptions"></div>
+          </div>
+          <div class="mt-4 div2" id="button"></div>
+        </form>
+        <div class="mt-4" id="questões"></div>
+      </div>
+    </div>
+  {% else %}
+    <div class="container-fluid px-5 div5">
+      <div class="py-5 px-5 div6">
+        <h3 class="text-center">Usuário não está logado</h3>
+      </div>
+    </div>
+  {% endif %}
+  <style>
+    .div2 {
+      /*alinhando o form de dentro horizontalmente no centro*/
+      display: flex;
+      justify-content: center;
+    }
+    .div3 {
+      width: 564px;
+      height: 40px;
+    }
+    .div4 {
+      /*alinhando a div de dentro verticalmente e horizontalmente no centro*/
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .div5 {
+      height: 691px;
+      /*alinhando a div de dentro verticalmente e horizontalmente no centro*/
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .div6 {
+      width: 500px;
+    }
+    .select1 {
+      cursor:pointer;
+    }
+    .button1 {
+      width: 100px;
+      border-radius: 16px;
+    }
+    .font2 {
+      font-size: 17px;
+    }
+    .visible {
+      display: none;
+    }
+    select option[data-default] {
+      /* cor simulando que o campo está desabilitado depois que abre o select */
+      color: #999;
+    }
+    .form-control:focus {
+      /*tirando box-shadow (luz azul) dos inputs*/
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+  </style>
+  <script>
+      //Liberando assunto
+      function liberaAssunto(){
+          var matéria = document.querySelector('#select1').value
+
+          if(matéria === "Matemática"){
+              document.querySelector('#selectoptions').innerHTML = `
+                <div class="col-sm-6 div4">
+                  <label class="font2" for="select2">Selecione um assunto:</label>
+                </div>
+                <div class="col-sm-6">
+                  <select class="form-control border-dark select1 font2" id="select2" onChange="liberaBotão()">
+                    <option selected data-default>Selecione</option>
+                    <option value="Grandezasproporcionais">Grandezas Proporcionais</option>
+                    <option value="PAePG">PA e PG</option>
+                  </select>
+                </div>
+              `
+          }else if(matéria === "Física"){
+              document.querySelector('#selectoptions').innerHTML = `
+                <div class="col-sm-6 div4">
+                  <label class="font2" for="select2">Selecione um assunto:</label>
+                </div>
+                <div class="col-sm-6">
+                  <select class="form-control border-dark select1 font2" id="select2" onChange="liberaBotão()">
+                    <option selected data-default>Selecione</option>
+                    <option value="Cinemática">Cinemática</option>
+                    <option value="Ondulatória">Ondulatória</option>
+                  </select>
+                </div>
+              `
+          }else{
+              document.querySelector('#selectoptions').innerHTML = ""
+              document.querySelector('#button').innerHTML = ""
+          }
+      }
+      //Liberando botão
+      function liberaBotão(){
+          var assunto = document.querySelector('#select2').value
+
+          if(assunto !== "Selecione"){
+            document.querySelector('#button').innerHTML = `
+              <button class="form-control border-dark bg-light button1 font2">Enviar</button>
+            `
+          }else{
+            document.querySelector('#button').innerHTML = ""
+          }
+      }
+      //Obtendo as questões da API
+      form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          var matéria = document.querySelector('#select1').value
+          var assunto = document.querySelector('#select2').value
+
+          buscarQuestões(matéria, assunto)
+      })
+      function buscarQuestões(matéria, assunto){
+          axios.get('https://threeaiapiquestoes-131fd4052cb8.herokuapp.com/' + matéria + '/' + assunto)
+          .then(function (response) {
+            console.log(response)
+            var questões = response.data
+            var mostrarquestões = ''
+
+            for(var i=0; i<questões.length; i++){
+                mostrarquestões += `
+                  <div>
+                     <h2>${questões[i].Fonte}</h2>
+                     <p>${questões[i].Enunciado}</p>
+                     <p>${questões[i].Alternativas}</p>
+                     <p class="mt-2">${questões[i].Resposta}</p>
+                  </div>
+                `
+            }
+
+            document.querySelector('#questões').innerHTML = mostrarquestões
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+          .finally(function () {
+          })
+      }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+{% endblock %}

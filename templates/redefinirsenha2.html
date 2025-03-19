@@ -1,0 +1,189 @@
+{% extends "entrarnaconta.html" %}
+{% block content %}
+  <div class="container-fluid px-5 div2">
+    <div class="py-5 px-5 div3">
+      <h3 class="text-center">Redefinir senha</h3>
+      <div class="mt-4">
+        <label for="code" id="label-code"><small>Digite o código recebido no email</small></label>
+        <input class="form-control font2" type="text" id="code" name="code" placeholder="Digite o código" autocomplete="off">
+        <div class="text-danger form-text" id="code1"></div>
+      </div>
+      <button class="form-control bg-light mt-4 font2 border" id="button1" onclick="Code()">Verificar código</button>
+      <form action="/entrarnaconta" method="POST" id="form" class="input">
+        <div class="mt-4">
+          <label for="password" id="label-password"><small>Nova senha</small></label><br>
+          <div class="input-group">
+            <input class="form-control border-end-0 font2" type="password" id="password" name="password" placeholder="Digite sua senha" aria-describedby="icon1">
+            <span class="input-group-text bg-white font2" id="icon1"><i class="bi bi-eye-slash-fill icon" id="bto-senha1" onclick="mostrarSenha1()"></i></span>
+          </div>
+          <div class="text-danger form-text notice" id="password1">Senha inválida</div>
+        </div>
+        <div class="mt-1">
+          <label for="confirmpassword" id="label-confirmpassword"><small>Confirme a nova senha</small></label><br>
+          <div class="input-group">
+            <input class="form-control border-end-0 font2" type="password" id="confirmpassword" name="confirmpassword" placeholder="Confirme sua senha" aria-describedby="icon2">
+            <span class="input-group-text bg-white font2" id="icon2"><i class="bi bi-eye-slash-fill icon" id="bto-senha2" onclick="mostrarSenha2()"></i></span>
+          </div>
+          <div class="text-danger form-text" id="confirmpassword1"></div>
+        </div>
+        <button class="form-control bg-light mt-4 font2 border" id="button2">Mudar senha</button>
+        <!-- Enviando o email para conseguir mudar a senha no banco de dados -->
+        <input class="input" type="text" name="email" value="{{email}}">
+      </form>
+    </div>
+  </div>
+  <style>
+    .div2 {
+      height: 691px;
+      /*alinhando a div de dentro verticalmente e horizontalmente no centro*/
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .div3 {
+      width: 500px;
+    }
+    .font2 {
+      font-size: 17px;
+    }
+    .border {
+      border-radius: 16px;
+    }
+    .icon {
+      cursor: pointer;
+      color: grey;
+    }
+    .notice {
+      display: none;
+    }
+    .input {
+      display: none;
+    }
+    .form-control:focus{
+      /*tirando box-shadow (luz azul) dos inputs*/
+      border-color: gainsboro;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+  </style>
+  <script>
+      function mostrarSenha1(){
+          var inputPass = document.getElementById('password')
+          var btoShowPass = document.getElementById('bto-senha1')
+
+          if(inputPass.type === 'password'){
+              inputPass.setAttribute('type', 'text')
+              btoShowPass.classList.replace('bi-eye-slash-fill', 'bi-eye-fill')
+          }else{
+              inputPass.setAttribute('type', 'password')
+              btoShowPass.classList.replace('bi-eye-fill', 'bi-eye-slash-fill')
+          }
+      }
+      function mostrarSenha2(){
+        var inputPass = document.getElementById('confirmpassword')
+        var btoShowPass = document.getElementById('bto-senha2')
+
+        if(inputPass.type === 'password'){
+            inputPass.setAttribute('type', 'text')
+            btoShowPass.classList.replace('bi-eye-slash-fill', 'bi-eye-fill')
+        }else{
+            inputPass.setAttribute('type', 'password')
+            btoShowPass.classList.replace('bi-eye-fill', 'bi-eye-slash-fill')
+        }
+      }
+
+      function validateCode(code){
+          var código = {{ código | tojson }};
+
+          if(code === código){
+            return true
+          }else{
+            return false
+          }
+      }
+      function Code(){
+          var code = document.querySelector('#code')
+          var label = document.querySelector('#label-code')
+          var message = document.querySelector('#code1')
+          var button = document.querySelector('#button1')
+          var form = document.querySelector('#form')
+
+          if(validateCode(code.value) === true){
+              //mudanças no label, input, message e button
+              code.setAttribute('style', 'display: none;')
+              label.setAttribute('style', 'display: none;')
+              message.innerHTML = ""
+              button.setAttribute('style', 'display: none;')
+              //deixando o form visível
+              form.setAttribute('style', 'display: block;')
+          }else{
+              code.setAttribute('style', 'border-color: red;')
+              code.focus()
+              label.setAttribute('style', 'color: red;')
+              message.setAttribute('style', 'color: red;')
+              message.innerHTML = "Código incorreto"
+          }
+      }
+
+      form.addEventListener('submit', (event) => {
+          event.preventDefault();
+
+          var labelpassword = document.querySelector('#label-password')
+          var password = document.querySelector('#password')
+          var span1 = document.querySelector('#icon1')
+          var password1 = document.querySelector('#password1')
+
+          var labelcpassword = document.querySelector('#label-confirmpassword')
+          var cpassword = document.querySelector('#confirmpassword')
+          var span2 = document.querySelector('#icon2')
+          var cpassword1 = document.querySelector('#confirmpassword1')
+
+          if(password.value !== ''){
+              labelpassword.setAttribute('style', 'color: initial;')
+              password.setAttribute('style', 'border-color: gainsboro;')
+              span1.setAttribute('style', 'border-color: gainsboro;')
+              password1.setAttribute('style', 'display: none;')
+
+              var contpassword = true
+          }else{
+              labelpassword.setAttribute('style', 'color: red;')
+              password.setAttribute('style', 'border-color: red;')
+              span1.setAttribute('style', 'border-color: red;')
+              password1.setAttribute('style', 'display: block;')
+
+              var contpassword = false
+          }
+          //
+          if(cpassword.value === password.value && password.value !== '' && cpassword.value !== ''){
+              labelcpassword.setAttribute('style', 'color: dark;')
+              cpassword.setAttribute('style', 'border-color: gainsboro;')
+              span2.setAttribute('style', 'border-color: gainsboro;')
+              cpassword1.innerHTML = ""
+
+              var contcpassword = true
+          }else if(cpassword.value === password.value && password.value === '' && cpassword.value === ''){
+              labelcpassword.setAttribute('style', 'color: red;')
+              cpassword.setAttribute('style', 'border-color: red;')
+              span2.setAttribute('style', 'border-color: red;')
+              cpassword1.innerHTML = "Senha inválida"
+
+              var contcpassword = false
+          }else{
+              labelcpassword.setAttribute('style', 'color: red;')
+              cpassword.setAttribute('style', 'border-color: red;')
+              span2.setAttribute('style', 'border-color: red;')
+              cpassword1.innerHTML = "Senhas não batem"
+
+              var contcpassword = false
+          }
+          //se nada estiver vazio, redireciona para a rota "/entrarnaconta"
+          if(contpassword === true && contcpassword === true){
+              form.submit()
+          }else if(contpassword === false){
+              password.focus()
+          }else if(contpassword === true && contcpassword !== true){
+              cpassword.focus()
+          }
+      })
+  </script>
+{% endblock %}

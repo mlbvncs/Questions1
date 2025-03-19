@@ -1,0 +1,91 @@
+{% extends "entrarnaconta.html" %}
+{% block content %}
+  <div class="container-fluid px-5 div2">
+    <div class="py-5 px-5 div3">
+      {% if current_user.is_authenticated %}
+        <h3 class="text-center">Usuário já está logado</h3>
+      {% else %}
+        <h3 class="text-center">Redefinir senha</h3>
+        <form action="/redefinirsenha" method="POST" id="form">
+          <div class="mt-4">
+            <label for="email" id="label-email"><small>Digite seu email para receber um código</small></label>
+            <input class="form-control font2" type="text" id="email" name="email" placeholder="Digite seu email" autocomplete="off">
+            <div class="text-danger form-text" id="email1"></div>
+          </div>
+          <button class="form-control bg-light mt-4 font2 border">Receber código</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+  <style>
+    .div2 {
+      height: 691px;
+      /*alinhando a div de dentro verticalmente e horizontalmente no centro*/
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .div3 {
+      width: 500px;
+    }
+    .font2 {
+      font-size: 17px;
+    }
+    .border {
+      border-radius: 16px;
+    }
+    .form-control:focus{
+      /*tirando box-shadow (luz azul) dos inputs*/
+      border-color: gainsboro;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+  </style>
+  <script>
+    function validateEmail(email){
+        var re = /\S+@\S+\.\S+/
+        return re.test(email)
+    }
+    form.addEventListener('submit', (event) => {
+        var form = document.querySelector('#form')
+        event.preventDefault();
+
+        var labelemail = document.querySelector('#label-email')
+        var email = document.querySelector('#email')
+        var email1 = document.querySelector('#email1')
+
+        //pegando os dados do banco de dados
+        var emails = {{ email | tojson }}
+
+        if(validateEmail(email.value) === true){
+            //se o user já existir no banco de dados, entra no if
+            if(emails.indexOf(email.value) > -1){
+                labelemail.setAttribute('style', 'color: black;')
+                email.setAttribute('style', 'border-color: gainsboro;')
+                email1.innerHTML = ""
+
+                var contemail = true
+            }else{
+                labelemail.setAttribute('style', 'color: red;')
+                email.setAttribute('style', 'border-color: red;')
+                email1.innerHTML = "Email inexistente"
+
+                var contemail = false
+            }
+        }else{
+            labelemail.setAttribute('style', 'color: red;')
+            email.setAttribute('style', 'border-color: red;')
+            email1.innerHTML = "Email inválido"
+
+            var contemail = false
+        }
+
+        //se nada estiver vazio, redireciona para a rota "/"
+        if(contemail === true){
+            form.submit()
+        }else{
+            email.focus()
+        }
+    })
+  </script>
+{% endblock %}

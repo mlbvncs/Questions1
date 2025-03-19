@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="static/styles/msghtml.css">
+  </head>
+  <body>
+    {% if current_user.is_authenticated %}
+      <p class="font">Use o seguinte código para excluir sua conta:</p>
+    {% else %}
+      <p class="font">Use o seguinte código para mudar sua senha:</p>
+    {% endif %}
+    <h1>{{código}}</h1>
+  </body>
+</html>

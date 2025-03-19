@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>three.ai</title>
+    <meta charset="UTF-8"/>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Importando boostrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Importando navbar.css-->
+    <link rel="stylesheet" href="static/styles/navbar.css">
+    <!-- Importando fonte Oswald-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+  </head>
+  <body class="body">
+    <header>
+      <div class="container-fluid div1 font1">
+        <nav class="navbar navbar-expand-sm navbar-dark px-5">
+          <a class="navbar-brand" href="/">three.ai</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbar">
+            <div class="navbar-nav">
+                <a class="nav-link active" href="/">01: Principal</a>
+              {% if current_user.is_authenticated %}
+                <a class="nav-link" href="/usuário">02: Usuário</a>
+                <a class="nav-link" href="/questões">03: Questões</a>
+              {% else %}
+                <a class="nav-link" href="/entrarnaconta">02: Entrar | Criar conta</a>
+              {% endif %}
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <!-- Div de fundo abaixo do menu -->
+      <div class="container-fluid px-5 div2">
+        <section>
+          <!-- Div de cor violeta, contendo a div com texto-->
+          <div class="div3">
+            <!-- Div com texto-->
+            <div class="text-center div4">
+              <p class="p1">SUA FONTE DEMOCRÁTICA DE QUESTÕES PARA O ENEM</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <style>
+      .div2 {
+        margin-top: 66.5px;
+        margin-bottom: 66.5px;
+      }
+      .div3 {
+        height: 558px;
+        border-radius: 10px;
+        background-color: #7362a1;
+        /*alinhando a div de dentro verticalmente e horizontalmente no centro*/
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .div4 {
+        width: 400px;
+      }
+      .p1 {
+        color: #ffffff;
+        font-family: Oswald;
+        font-size: 60px;
+        /*Deixando em negrito*/
+        font-weight: 600;
+        /*Distância entre as linhas de texto*/
+        line-height: 70px;
+      }
+      @media screen and (max-width: 444px){
+        .p1 {
+          font-size: 40px;
+          line-height: 50px;
+        }
+        .div3 {
+          height: 470px;
+        }
+        .div4 {
+          width: 90%;
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }
+    </style>
+  </body>
+</html>

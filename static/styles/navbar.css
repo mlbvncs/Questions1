@@ -1,0 +1,12 @@
+.body {
+  /*fonte que já a página já se adequa devido ao bootstrap*/
+  font-family: Segoe UI;
+}
+.div1 {
+  background-color: #7362a1;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+.font1 {
+  font-size: 20px;
+}

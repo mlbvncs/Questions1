@@ -1,0 +1,102 @@
+{% extends "usuário.html" %}
+{% block content %}
+  <div class="container-fluid px-5 div2">
+    <div class="py-5 px-5 div3">
+      <h3 class="text-center">Excluir conta</h3>
+      <div class="mt-4">
+        <label for="code" id="label-code"><small>Digite o código recebido no email</small></label>
+        <input class="form-control font2" type="text" id="code" name="code" placeholder="Digite o código" autocomplete="off">
+        <div class="text-danger form-text" id="code1"></div>
+      </div>
+      <button class="form-control bg-light mt-4 font2 border" id="button1" onclick="Code()">Verificar código</button>
+    </div>
+    <form action="/excluircontaadicional" method="POST" id="form" class="input">
+      <!-- Enviando o email para conseguir excluir a conta -->
+      <input type="text" name="email" value="{{email}}">
+    </form>
+  </div>
+  <style>
+    .div2 {
+      height: 691px;
+      /*alinhando a div de dentro verticalmente e horizontalmente no centro*/
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .div3 {
+      width: 500px;
+    }
+    .font2 {
+      font-size: 17px;
+    }
+    .border {
+      border-radius: 16px;
+    }
+    .input {
+      display: none;
+    }
+    .form-control:focus{
+      /*tirando box-shadow (luz azul) dos inputs*/
+      border-color: gainsboro;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+  </style>
+  <script>
+      function mostrarSenha1(){
+          var inputPass = document.getElementById('password')
+          var btoShowPass = document.getElementById('bto-senha1')
+
+          if(inputPass.type === 'password'){
+              inputPass.setAttribute('type', 'text')
+              btoShowPass.classList.replace('bi-eye-slash-fill', 'bi-eye-fill')
+          }else{
+              inputPass.setAttribute('type', 'password')
+              btoShowPass.classList.replace('bi-eye-fill', 'bi-eye-slash-fill')
+          }
+      }
+      function mostrarSenha2(){
+        var inputPass = document.getElementById('confirmpassword')
+        var btoShowPass = document.getElementById('bto-senha2')
+
+        if(inputPass.type === 'password'){
+            inputPass.setAttribute('type', 'text')
+            btoShowPass.classList.replace('bi-eye-slash-fill', 'bi-eye-fill')
+        }else{
+            inputPass.setAttribute('type', 'password')
+            btoShowPass.classList.replace('bi-eye-fill', 'bi-eye-slash-fill')
+        }
+      }
+
+      function validateCode(code){
+          var código = {{ código | tojson }}
+
+          if(code === código){
+            return true
+          }else{
+            return false
+          }
+      }
+      function Code(){
+          var code = document.querySelector('#code')
+          var label = document.querySelector('#label-code')
+          var message = document.querySelector('#code1')
+
+          if(validateCode(code.value) === true){
+              //mudanças no label, input e message
+              label.setAttribute('style', 'color: black;')
+              code.setAttribute('style', 'border-color: gainsboro;')
+              message.innerHTML = ""
+              //alerta avisando que a conta foi excluída
+              alert("Sua conta foi excluída!")
+              //enviando o email pelo form
+              form.submit()
+          }else{
+              code.setAttribute('style', 'border-color: red;')
+              code.focus()
+              label.setAttribute('style', 'color: red;')
+              message.innerHTML = "Código incorreto"
+          }
+      }
+  </script>
+{% endblock %}

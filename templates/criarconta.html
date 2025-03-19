@@ -1,0 +1,246 @@
+{% extends "entrarnaconta.html" %}
+{% block content %}
+  <div class="container-fluid px-5 div2">
+    <div class="py-5 px-5 div3">
+      {% if current_user.is_authenticated %}
+        <h3 class="text-center">Usuário já está logado</h3>
+      {% else %}
+        <h3 class="text-center">Crie sua conta</h3>
+        <div class="container-fluid border mt-4 div4">
+          <div class="row text-center py-2 font2">
+            <div class="col-sm-6">
+              <a class="nav-link color" href="/entrarnaconta">Entrar na conta</a>
+            </div>
+            <div class="col-sm-6">
+              <a class="nav-link" href="/criarconta">Criar conta</a>
+            </div>
+          </div>
+        </div>
+        <form action="/criarconta" method="POST" id="form">
+          <div class="mt-4">
+            <label for="user" id="label-user"><small>Usuário</small></label>
+            <input class="form-control font3"1234Q type="text" id="user" name="user" placeholder="Digite seu user" autocomplete="off">
+            <div class="text-danger form-text" id="user1"></div>
+          </div>
+          <div class="mt-1">
+            <label for="email" id="label-email"><small>Email</small></label>
+            <input class="form-control font3" type="text" id="email" name="email" placeholder="Digite seu email" autocomplete="off">
+            <div class="text-danger form-text" id="email1"></div>
+          </div>
+          <div class="mt-1">
+            <label for="password" id="label-password"><small>Senha</small></label><br>
+            <div class="input-group">
+              <input class="form-control border-end-0 font3" type="password" id="password" name="password" placeholder="Digite sua senha" aria-describedby="icon1">
+              <span class="input-group-text bg-white font3" id="icon1"><i class="bi bi-eye-slash-fill icon" id="bto-senha1" onclick="mostrarSenha1()"></i></span>
+            </div>
+            <div class="text-danger form-text notice" id="password1">Senha inválida</div>
+          </div>
+          <div class="mt-1">
+            <label for="confirmpassword" id="label-confirmpassword"><small>Confirme sua senha</small></label><br>
+            <div class="input-group">
+              <input class="form-control border-end-0 font3" type="password" id="confirmpassword" name="confirmpassword" placeholder="Confirme sua senha" aria-describedby="icon2">
+              <span class="input-group-text bg-white font3" id="icon2"><i class="bi bi-eye-slash-fill icon" id="bto-senha2" onclick="mostrarSenha2()"></i></span>
+            </div>
+            <div class="text-danger form-text" id="confirmpassword1"></div>
+          </div>
+          <button class="form-control bg-light mt-3 font3 border">Criar conta</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+  <style>
+    .div2 {
+      height: 691px;
+      /*alinhando a div de dentro verticalmente e horizontalmente no centro*/
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .div3 {
+      width: 500px;
+    }
+    .div4 {
+      border-radius: 16px;
+    }
+    .font2 {
+      font-size: 20px;
+    }
+    .font3 {
+      font-size: 17px;
+    }
+    .border {
+      border-radius: 16px;
+    }
+    .icon {
+      cursor: pointer;
+      color: grey;
+    }
+    .color {
+      color: gainsboro;
+    }
+    .notice {
+      display: none;
+    }
+    .form-control:focus{
+      /*tirando box-shadow (luz azul) dos inputs*/
+      border-color: gainsboro;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+  </style>
+  <script>
+      function mostrarSenha1(){
+          var inputPass = document.getElementById('password')
+          var btoShowPass = document.getElementById('bto-senha1')
+
+          if(inputPass.type === 'password'){
+              inputPass.setAttribute('type', 'text')
+              btoShowPass.classList.replace('bi-eye-slash-fill', 'bi-eye-fill')
+          }else{
+              inputPass.setAttribute('type', 'password')
+              btoShowPass.classList.replace('bi-eye-fill', 'bi-eye-slash-fill')
+          }
+      }
+      function mostrarSenha2(){
+        var inputPass = document.getElementById('confirmpassword')
+        var btoShowPass = document.getElementById('bto-senha2')
+
+        if(inputPass.type === 'password'){
+            inputPass.setAttribute('type', 'text')
+            btoShowPass.classList.replace('bi-eye-slash-fill', 'bi-eye-fill')
+        }else{
+            inputPass.setAttribute('type', 'password')
+            btoShowPass.classList.replace('bi-eye-fill', 'bi-eye-slash-fill')
+        }
+      }
+
+      function validateEmail(email){
+          var re = /\S+@\S+\.\S+/;
+          return re.test(email);
+      }
+      form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          var form = document.querySelector('#form')
+
+          var labeluser = document.querySelector('#label-user')
+          var user = document.querySelector('#user')
+          var user1 = document.querySelector('#user1')
+
+          var labelemail = document.querySelector('#label-email')
+          var email = document.querySelector('#email')
+          var email1 = document.querySelector('#email1')
+
+          var labelpassword = document.querySelector('#label-password')
+          var password = document.querySelector('#password')
+          var span1 = document.querySelector('#icon1')
+          var password1 = document.querySelector('#password1')
+
+          var labelcpassword = document.querySelector('#label-confirmpassword')
+          var cpassword = document.querySelector('#confirmpassword')
+          var span2 = document.querySelector('#icon2')
+          var cpassword1 = document.querySelector('#confirmpassword1')
+
+          //pegando os dados do banco de dados
+          var users = {{ user | tojson }}
+          var mails = {{ email | tojson }}
+
+          if(user.value !== ''){
+              //se o user já existir no banco de dados, entra no if
+              if(users.indexOf(user.value) > -1){
+                  labeluser.setAttribute('style', 'color: red;')
+                  user.setAttribute('style', 'border-color: red;')
+                  user1.innerHTML = "Usuário existente"
+
+                  var contuser = false
+              }else{
+                  labeluser.setAttribute('style', 'color: dark;')
+                  user.setAttribute('style', 'border-color: gainsboro;')
+                  user1.innerHTML = ""
+
+                  var contuser = true
+              }
+          }else{
+              labeluser.setAttribute('style', 'color: red;')
+              user.setAttribute('style', 'border-color: red;')
+              user1.innerHTML = "Usuário inválido"
+
+              var contuser = false
+          }
+          //
+          if(validateEmail(email.value) === true){
+              //se o email já existir no banco de dados, entra no if
+              if(mails.indexOf(email.value) > -1){
+                  labelemail.setAttribute('style', 'color: red;')
+                  email.setAttribute('style', 'border-color: red;')
+                  email1.innerHTML = "Email existente"
+
+                  var contemail = false
+              }else{
+                  labelemail.setAttribute('style', 'color: dark;')
+                  email.setAttribute('style', 'border-color: gainsboro;')
+                  email1.innerHTML = ""
+
+                  var contemail = true
+              }
+          }else{
+              labelemail.setAttribute('style', 'color: red;')
+              email.setAttribute('style', 'border-color: red;')
+              email1.innerHTML = "Email inválido"
+
+              var contemail = false
+          }
+          //
+          if(password.value !== ''){
+              labelpassword.setAttribute('style', 'color: dark;')
+              password.setAttribute('style', 'border-color: gainsboro;')
+              span1.setAttribute('style', 'border-color: gainsboro;')
+              password1.setAttribute('style', 'display: none;')
+
+              var contpassword = true
+          }else{
+              labelpassword.setAttribute('style', 'color: red;')
+              password.setAttribute('style', 'border-color: red;')
+              span1.setAttribute('style', 'border-color: red;')
+              password1.setAttribute('style', 'display: block;')
+
+              var contpassword = false
+          }
+          //
+          if(cpassword.value === password.value && password.value !== '' && cpassword.value !== ''){
+              labelcpassword.setAttribute('style', 'color: dark;')
+              cpassword.setAttribute('style', 'border-color: gainsboro;')
+              span2.setAttribute('style', 'border-color: gainsboro;')
+              cpassword1.innerHTML = ""
+
+              var contcpassword = true
+          }else if(cpassword.value === password.value && password.value === '' && cpassword.value === ''){
+              labelcpassword.setAttribute('style', 'color: red;')
+              cpassword.setAttribute('style', 'border-color: red;')
+              span2.setAttribute('style', 'border-color: red;')
+              cpassword1.innerHTML = "Senha inválida"
+
+              var contcpassword = false
+          }else{
+              labelcpassword.setAttribute('style', 'color: red;')
+              cpassword.setAttribute('style', 'border-color: red;')
+              span2.setAttribute('style', 'border-color: red;')
+              cpassword1.innerHTML = "Senhas não batem"
+
+              var contcpassword = false
+          }
+
+          //se nada estiver vazio, redireciona para a rota "/criarconta"
+          if(contuser === true && contemail === true && contpassword === true && contcpassword === true){
+              form.submit()
+          }else if(contuser !== true){
+              user.focus()
+          }else if(contuser === true && contemail !== true){
+              email.focus()
+          }else if(contuser === true && contemail === true && contpassword !== true){
+              password.focus()
+          }else if(contuser === true && contemail === true && contpassword === true && contcpassword !== true){
+              cpassword.focus()
+          }
+      })
+  </script>
+{% endblock %}

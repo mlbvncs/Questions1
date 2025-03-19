@@ -1,0 +1,62 @@
+{% extends "questões.html" %}
+{% block content %}
+  {% if current_user.is_authenticated %}
+    <div class="container-fluid px-5 div2">
+      <div class="mt-4 div3">
+        <form action="/criarquestão" method="POST">
+          <div class="input-group">
+            <textarea class="form-control border-dark font2 textarea1" placeholder="Digite algo..." rows="4" name="textarea">{{prompt}}</textarea>
+            <button class="btn btn-outline-dark font2 button1"><i class="bi bi-arrow-down"></i></button>
+          </div>
+        </form>
+        <p class="text-center pt-4">oi</p>
+      </div>
+    </div>
+  {% else %}
+    <div class="container-fluid px-5 div4">
+      <div class="py-5 px-5 div5">
+        <h3 class="text-center">Usuário não está logado</h3>
+      </div>
+    </div>
+  {% endif %}
+  <style>
+    .div2 {
+      /*alinhando o form de dentro horizontalmente no centro*/
+      display: flex;
+      justify-content: center;
+    }
+    .div3 {
+      width: 564px;
+    }
+    .div4 {
+      height: 691px;
+      /*alinhando a div de dentro verticalmente e horizontalmente no centro*/
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .div5 {
+      width: 500px;
+    }
+    .textarea1 {
+      padding: 14px 48px 14px 24px;
+      border-top-left-radius: 5px;
+      border-bottom-left-radius: 5px;
+      /*tirando as linhas do canto inferior direito*/
+      resize: none;
+    }
+    .button1 {
+      width: 64px;
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+    }
+    .font2 {
+      font-size: 17px;
+    }
+    .form-control:focus{
+      /*tirando box-shadow (luz azul) dos inputs*/
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+  </style>
+{% endblock %}
